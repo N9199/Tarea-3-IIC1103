@@ -1,7 +1,5 @@
 #To-do:
-#Fill classes (Mostly ready)
-#Design GUI (Kinda ready)
-#Program interactions (Some are working)
+#Do save method
 #Do optimized backtracking (maybe DP)(Haven't even started)
 import tkinter as tk
 import math
@@ -76,7 +74,31 @@ class Simulacion(tk.Frame):
             self.tests.append(test)
 
     def save(self):
-        pass
+        file = simpledialog.askstring("Guardar estadisticas","Como desea que se llame el archivo de las estadisticas?")
+        if len(file)<4:
+            file+=".txt"
+        elif file[-4:]!=".txt":
+            file+=".txt"
+        with open(file, mode='w') as f:
+            f.write(self.character.atributos[0]+'\n')
+            f.write("Vida"+",")
+            for i in range(2,len(self.character.atributos)):
+                f.write(str(self.character.atributos[i])+",")
+            f.write(str(self.character.tiempo)+'\n')
+            for item in self.character.atributos:
+                if item!=self.character.atributos[-1]:
+                    f.write(str(item)+",")
+                else:
+                    f.write(str(item)+"\n")
+            f.write("DeltaVida"+'\n')
+            for test in self.tests:
+                if test!=self.tests:
+                    f.write(str(test)+",")
+                else:
+                    f.write(str(test)+"\n")
+            
+
+
 
     def build_GUI(self):
         self.info = []
@@ -109,7 +131,7 @@ class Simulacion(tk.Frame):
 
     def test(self):
         test = self.tests.pop(0)
-        messagebox.showinfo(message=str(self.tests[0]))
+        messagebox.showinfo(message=str(test))
         self.character.taketest(test)
         self.updatestats()
         if self.character.atributos[1]<=0:
@@ -185,6 +207,7 @@ class Personaje:
     def __init__(self, master, puntos, vida, tiempo, quick=False):
         self.vida = int(vida)
         self.tiempo = int(tiempo)
+        self.tiempo1 = int(tiempo)
         self.tiempo2 = self.tiempo
         self.puntos = int(puntos)
         self.temp = 4*[0]
@@ -267,7 +290,7 @@ class Personaje:
                 self.master.focus_set()
     
     def taketest(self, test):
-        messagebox.showinfo("Resumen Interrogación","Gastaste "+str(self.tiempo2-self.tiempo))
+        messagebox.showinfo("Resumen Interrogación","Gastaste "+str(self.tiempo2-self.tiempo)+" puntos de tiempo")
         self.delta=0
         temp = 0
         temp += math.floor(self.bon[0]*self.atributos[2])+self.temp[0]-int(test.destreza)
@@ -283,10 +306,10 @@ class Personaje:
             self.atributos[1]+=self.delta
         self.temp = 4*[0]
         self.consumables = []
-        self.tiempo2 = self.tiempo
+        self.tiempo2 = self.tiempo1
             
     def consume(self, consumable):
-        self.tiempo-=consumable.costo
+        self.tiempo1-=consumable.costo
         self.temp[self.stats[consumable.atributo]-1]+=consumable.tempbon
         self.consumables.append(consumable)
 
