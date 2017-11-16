@@ -1,34 +1,32 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter.messagebox import showinfo
-
-def popup_bonus():
-    win = tk.Toplevel()
-    win.wm_title("Window")
-
-    l = tk.Label(win, text="Input")
-    l.grid(row=0, column=0)
-
-    b = ttk.Button(win, text="Okay", command=win.destroy)
-    b.grid(row=1, column=0)
-
-def popup_showinfo():
-    showinfo("Window", "Hello World!")
-
-class Application(ttk.Frame):
-
-    def __init__(self, master):
-        ttk.Frame.__init__(self, master)
-        self.pack()
-
-        self.button_bonus = ttk.Button(self, text="Bonuses", command=popup_bonus)
-        self.button_bonus.pack()
-
-        self.button_showinfo = ttk.Button(self, text="Show Info", command=popup_showinfo)
-        self.button_showinfo.pack()
-
-root = tk.Tk()
-
-app = Application(root)
-
-root.mainloop()
+import random
+cards = ['As',2,3,4,5,6,7,8,9,10,'J','Q','K']
+nums = {}
+for i in range(13):
+    nums[i+1]=cards[i]
+    nums[cards[i]]=i+1
+cards = 4*cards
+score = 0
+index = random.randint(0,len(cards)-1)
+current = cards[index]
+print(current)
+del cards[index]
+last = nums[current]
+while len(cards) > 0:
+    print("Score:",score)
+    temp = 0
+    for i in range(1,nums[current]-1):
+        temp += cards.count(nums[i+1])
+    print(float(temp)/float(len(cards)))
+    move = input()
+    index = random.randint(0,len(cards)-1)
+    current = cards[index]
+    if nums[current] == 1:
+        print(current)
+        index = random.randint(0,len(cards)-1)
+        current = cards[index]
+        print(current)
+    elif ((move == '+' and last >= nums[current]) or (move == '-' and last <= nums[current])):
+        score += 1
+    del cards[index]
+    print("Current:",current,"Last:",nums[last])
+    last = nums[current]

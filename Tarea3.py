@@ -1,5 +1,5 @@
 #To-do:
-#Do save methodÍ
+#Do save method
 #Do optimized backtracking (maybe DP)(Haven't even started)
 import tkinter as tk
 import math
@@ -72,32 +72,43 @@ class Simulacion(tk.Frame):
             a = data[i][:-1].split(',')
             test = Prueba(a)
             self.tests.append(test)
+        self.saved = self.tests+self.consumables+self.equipment
 
     def save(self):
-        file = simpledialog.askstring("Guardar estadisticas","Como desea que se llame el archivo de las estadisticas?")
+        file = simpledialog.askstring("Guardar estadísticas","Como desea que se llame el archivo de las estadísticas?")
         if len(file)<4:
             file+=".txt"
         elif file[-4:]!=".txt":
             file+=".txt"
         with open(file, mode='w') as f:
             f.write(self.character.atributos[0]+'\n')
-            f.write("Vida"+",")
+            f.write(str(self.character.vida)+",")
             for i in range(2,len(self.character.atributos)):
                 f.write(str(self.character.atributos[i])+",")
             f.write(str(self.character.tiempo)+'\n')
             for item in self.character.atributos:
+                if item==self.character.atributos[0]:
+                    continue
                 if item!=self.character.atributos[-1]:
                     f.write(str(item)+",")
                 else:
                     f.write(str(item)+"\n")
-            f.write("DeltaVida"+'\n')
-            for test in self.tests:
-                if test!=self.tests:
-                    f.write(str(test)+",")
+            f.write(str(self.atributos[1]-self.character.vida)+'\n')
+            for i in range(3):
+                if i<2:
+                    f.write(self.saved[i].nombre+",")
                 else:
-                    f.write(str(test)+"\n")
-            
-
+                    f.write(self.saved[i].nombre+"\n")
+            temp1 = []
+            for i in range(3,len(self.saved)):
+                if self.saved[i] is Consumible:
+                    if not(self.saved[i] in temp1):
+                        temp1.append(self.saved[i])
+                        f.write(str(self.saved[i])+","+str(self.saved.count(self.saved[i])-self.consumables.count(self.saved[i]))+"\n")
+                elif self.saved[i] is Equipamiento:
+                    if not (self.saved[i] in self.equipment):
+                        f.write(str(self.saved[i])+"\n")
+            f.write(str(self.character.tiempo-self.character.tiempo2))
 
 
     def build_GUI(self):
@@ -286,6 +297,7 @@ class Personaje:
                 messagebox.showerror("Error","Puntos mal distribuidos")
             else:
                 self.atributos[1]+=self.vida
+                self.vida = self.atributos[1]
                 self.ask.destroy()
                 self.master.focus_set()
     
@@ -347,7 +359,7 @@ class Equipamiento:
         self.bon = float(parameter_list[2])
 
     def __str__(self):
-        return str(self.nombre)+": Bonificador "+str(self.bon)+" a "+self.atributo
+        return str(self.nombre)+": Bonus de "+str(self.bon)+" a "+self.atributo
 
 sim = Simulacion()
 sim.mainloop()
